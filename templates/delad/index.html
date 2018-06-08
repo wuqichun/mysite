@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+   <div class="container">
+
+       <div class="col-lg-2"></div>
+        <div class="col-lg-8">
+            <div class="text-center">
+                <h2>新闻去广告后台管理</h2>
+            </div>
+
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>移除图片的地址</th>
+                <th>被换成愿景学成</th>
+                <th>新闻中被移除</th>
+                <th>编辑</th>
+                <th>删除</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for i in alllist %}
+              <tr>
+                <td>{{ i.id }}</td>
+                <td>{{ i.image|slice:"50" }}</td>
+                <td>{{ i.replacead }}</td>
+                <td>{{ i.removead }}</td>
+                <td><a href="/edit" class="label label-primary">编辑</a></td>
+                <td><a href="/delete" class="label label-danger">删除</a></td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+       <div class="col-lg-2"></div>
+      </div>
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </body>
+<script>
+    $(document).ready(function () {
+        //找到所有td节点
+        var tds = $("td");
+        //给所有td节点添加点击事件
+        tds.click(tdclick);
+    })
+
+    function  tdclick() {
+        var clickfunction = this;
+        //取出当前节点
+        var td = $(this);
+        //取出当前文本内容
+        var text = $(this).text();
+        //2，清空td里边内同
+    td.html("");
+    //3,建立一个文本框，也就是建一个input节点
+    var input = $("<input>");
+    //4,设置文本框中值是保存起来的文本内容
+    input.attr("value",text);
+    //4.5让文本框可以相应键盘按下的事件
+    input.keyup(function(event){
+        //记牌器当前用户按下的键值
+        var myEvent = event || window.event;//获取不同浏览器中的event对象
+        var kcode = myEvent.keyCode;
+        //判断是否是回车键按下
+        if(kcode == 13){
+            var inputnode = $(this);
+            //获取当前文本框的内容
+            var inputext = inputnode.val();
+            //清空td里边的内容,然后将内容填充到里边
+            var tdNode = inputnode.parent();
+            tdNode.html(inputext);
+            //让td重新拥有点击事件
+            tdNode.click(tdclick);
+            $.ajax({
+                url:"/edit",
+                type:"post",
+                dataType:"json",
+                async:true
+            })
+        }
+    });
+    //5，把文本框加入到td里边去
+    td.append(input);
+    //5.5让文本框里边的文章被高亮选中
+    //需要将jquery的对象转换成dom对象
+    var inputdom = input.get(0);
+    inputdom.select();
+
+    //6,需要清楚td上的点击事件
+    td.unbind("click");
+
+    }
+</script>
+</html>
